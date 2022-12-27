@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import kr.geneus.jskang.converter.common.Converter;
+import kr.geneus.jskang.converter.common.Convert;
 import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -16,18 +16,18 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 @Slf4j
-public class XmlToJson implements Converter {
+public class XmlConvert implements Convert {
 
     private DocumentBuilderFactory factory = null;
     private DocumentBuilder builder = null;
     private String xmlCode = "";
 
-    public XmlToJson() throws ParserConfigurationException {
+    public XmlConvert() throws ParserConfigurationException {
         this.factory = DocumentBuilderFactory.newInstance();
         this.builder = factory.newDocumentBuilder();
     }
 
-    public XmlToJson(String xmlCode) throws ParserConfigurationException {
+    public XmlConvert(String xmlCode) throws ParserConfigurationException {
         this.factory = DocumentBuilderFactory.newInstance();
         this.builder = factory.newDocumentBuilder();
         this.xmlCode = xmlCode;
@@ -63,7 +63,7 @@ public class XmlToJson implements Converter {
         return map;
     }
 
-    public Map<String, Object> getNodeList(Document doc, String rootName) {
+    private Map<String, Object> getNodeList(Document doc, String rootName) {
         doc.getDocumentElement().normalize();
         NodeList nList = doc.getElementsByTagName(rootName);
 
@@ -74,7 +74,7 @@ public class XmlToJson implements Converter {
         return travNode(map.get(rootName), nList);
     }
 
-    public Map travNode(Object map, NodeList nodes) {
+    private Map travNode(Object map, NodeList nodes) {
 
         for (int i = 0; i < nodes.getLength(); i++) {
             Node n = nodes.item(i);
