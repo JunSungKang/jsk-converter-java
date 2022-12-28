@@ -5,5 +5,5 @@ import java.util.Map;
 
 public interface Convert {
 
-    public Map<String, Object> buildToMap() throws IOException, Exception;
+    public void buildMap() throws IOException, Exception;
 }

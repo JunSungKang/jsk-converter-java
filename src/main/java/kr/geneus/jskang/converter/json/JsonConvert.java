@@ -1,12 +1,11 @@
 package kr.geneus.jskang.converter.json;
 
-import java.util.Map;
 import kr.geneus.jskang.converter.common.Convert;
+import kr.geneus.jskang.converter.common.ResultFormat;
 
-public class JsonConvert implements Convert {
+public class JsonConvert extends ResultFormat implements Convert {
 
     @Override
-    public Map<String, Object> buildToMap() {
-        return null;
+    public void buildMap() {
     }
 }
