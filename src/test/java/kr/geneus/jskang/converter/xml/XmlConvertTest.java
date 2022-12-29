@@ -14,62 +14,52 @@ class XmlConvertTest {
     final String xml3 = "<project> <modelVersion>4.0.0</modelVersion> <parent> <groupId>com.mycompany.app</groupId> <artifactId>my-app</artifactId> <version>1</version> </parent> <groupId>com.mycompany.app11</groupId> <artifactId>my-module11</artifactId> <version>11</version> </project>";
 
     @Test
-    void build1Success() throws ParserConfigurationException, IOException {
+    void build1() throws ParserConfigurationException, IOException {
         XmlConvert xmlConvert = new XmlConvert();
         xmlConvert.setSource(this.xml1);
-        xmlConvert.buildMap();
-        assertThat(xmlConvert.toMap().toString())
+        assertThat(xmlConvert.buildToMap().toString())
             .isEqualTo("{note={to=Tove, from=Jani, heading=Reminder, body=Don't forget me this weekend!}}");
 
         xmlConvert.setSource(this.xml2);
-        xmlConvert.buildMap();
-        assertThat(xmlConvert.toMap().toString())
+        assertThat(xmlConvert.buildToMap().toString())
             .isEqualTo(
                 "{breakfast_menu={food={name=Homestyle Breakfast, price=$6.95, description=Two eggs, bacon or sausage, toast, and our ever-popular hash browns, calories=950}}}");
 
         xmlConvert.setSource(this.xml3);
-        xmlConvert.buildMap();
-        assertThat(xmlConvert.toMap().toString())
+        assertThat(xmlConvert.buildToMap().toString())
             .isEqualTo(
                 "{project={modelVersion=4.0.0, parent={groupId=com.mycompany.app, artifactId=my-app, version=1}, groupId=com.mycompany.app11, artifactId=my-module11, version=11}}");
     }
 
     @Test
-    void build1Exception() throws ParserConfigurationException, IOException {
+    void build1Exception() throws ParserConfigurationException {
         XmlConvert xmlConvert = new XmlConvert();
-
-        String xmlError1 = "<test><code>M</code>";
-        xmlConvert.setSource(xmlError1);
-        assertThatThrownBy(() -> xmlConvert.buildMap())
+        xmlConvert.setSource(this.xml1);
+        assertThatThrownBy(() -> xmlConvert.buildToMap().toString())
             .isInstanceOf(IOException.class);
 
-        String xmlError2 = "testcodeM";
-        xmlConvert.setSource(xmlError2);
-        assertThatThrownBy(() -> xmlConvert.buildMap())
+        xmlConvert.setSource(this.xml2);
+        assertThatThrownBy(() -> xmlConvert.buildToMap().toString())
             .isInstanceOf(IOException.class);
 
-        String xmlError3 = "<test><code><1>6>9</code></test>";
-        xmlConvert.setSource(xmlError3);
-        assertThatThrownBy(() -> xmlConvert.buildMap())
+        xmlConvert.setSource(this.xml3);
+        assertThatThrownBy(() -> xmlConvert.buildToMap().toString())
             .isInstanceOf(IOException.class);
     }
 
     @Test
-    void build2Success() throws ParserConfigurationException, IOException {
+    void build2() throws ParserConfigurationException, IOException {
         XmlConvert xmlConvert = new XmlConvert(this.xml1);
-        xmlConvert.buildMap();
-        assertThat(xmlConvert.toMap().toString())
+        assertThat(xmlConvert.buildToMap().toString())
             .isEqualTo("{note={to=Tove, from=Jani, heading=Reminder, body=Don't forget me this weekend!}}");
 
         xmlConvert = new XmlConvert(this.xml2);
-        xmlConvert.buildMap();
-        assertThat(xmlConvert.toMap().toString())
+        assertThat(xmlConvert.buildToMap().toString())
             .isEqualTo(
                 "{breakfast_menu={food={name=Homestyle Breakfast, price=$6.95, description=Two eggs, bacon or sausage, toast, and our ever-popular hash browns, calories=950}}}");
 
         xmlConvert = new XmlConvert(this.xml3);
-        xmlConvert.buildMap();
-        assertThat(xmlConvert.toMap().toString())
+        assertThat(xmlConvert.buildToMap().toString())
             .isEqualTo(
                 "{project={modelVersion=4.0.0, parent={groupId=com.mycompany.app, artifactId=my-app, version=1}, groupId=com.mycompany.app11, artifactId=my-module11, version=11}}");
     }

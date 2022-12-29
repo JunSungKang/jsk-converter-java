@@ -8,7 +8,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import kr.geneus.jskang.converter.common.Convert;
-import kr.geneus.jskang.converter.common.ResultFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -17,7 +16,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 @Slf4j
-public class XmlConvert extends ResultFormat implements Convert {
+public class XmlConvert implements Convert {
 
     private DocumentBuilderFactory factory = null;
     private DocumentBuilder builder = null;
@@ -40,7 +39,7 @@ public class XmlConvert extends ResultFormat implements Convert {
     }
 
     @Override
-    public void buildMap() throws IOException {
+    public Map<String, Object> buildToMap() throws IOException {
         if (this.xmlCode.isEmpty()) {
             throw new NullPointerException("The value to convert is empty.");
         }
@@ -58,13 +57,10 @@ public class XmlConvert extends ResultFormat implements Convert {
         }
 
         String rootName = document.getFirstChild().getNodeName();
-        super.map = getNodeList(document, rootName);
+        Map<String, Object> map = getNodeList(document, rootName);
         log.debug("[XML to MAP Result]");
-        log.debug(super.map.toString());
-    }
-
-    public Map<String, Object> toMap() {
-        return super.map;
+        log.debug(map.toString());
+        return map;
     }
 
     private Map<String, Object> getNodeList(Document doc, String rootName) {
