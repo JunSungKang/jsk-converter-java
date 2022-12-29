@@ -1,10 +1,13 @@
 package kr.geneus.jskang.converter.xml;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.util.EmptyStackException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.naming.SizeLimitExceededException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,6 +28,20 @@ public class XmlConvert implements Convert {
 	public XmlConvert() throws ParserConfigurationException {
 		this.factory = DocumentBuilderFactory.newInstance();
 		this.builder = factory.newDocumentBuilder();
+	}
+
+	public Map<String, Object> toMap(File file) throws IOException, SizeLimitExceededException {
+		RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+		long fileSize = randomAccessFile.length();
+		if (fileSize >= Integer.MAX_VALUE) {
+			throw new SizeLimitExceededException("Files larger than 2 GB cannot be parsed.");
+		}
+
+		byte[] xml = new byte[(int)fileSize];
+		randomAccessFile.read(xml);
+		randomAccessFile.close();
+
+		return this.toMap(new String(xml));
 	}
 
 	@Override
