@@ -30,7 +30,7 @@ class XmlConvertTest {
     }
 
     @Test
-    void build1Exception() throws ParserConfigurationException, IOException {
+    void build1Exception() throws ParserConfigurationException {
         XmlConvert xmlConvert = new XmlConvert();
 
         String xmlError1 = "<test><code>M</code>";
