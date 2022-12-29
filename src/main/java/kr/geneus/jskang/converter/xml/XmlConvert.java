@@ -1,9 +1,13 @@
 package kr.geneus.jskang.converter.xml;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.io.StringReader;
+import java.util.EmptyStackException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.naming.SizeLimitExceededException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -18,90 +22,88 @@ import org.xml.sax.SAXException;
 @Slf4j
 public class XmlConvert implements Convert {
 
-    private DocumentBuilderFactory factory = null;
-    private DocumentBuilder builder = null;
-    private String xmlCode = "";
+	private DocumentBuilderFactory factory = null;
+	private DocumentBuilder builder = null;
 
-    public XmlConvert() throws ParserConfigurationException {
-        this.factory = DocumentBuilderFactory.newInstance();
-        this.builder = factory.newDocumentBuilder();
-    }
+	public XmlConvert() throws ParserConfigurationException {
+		this.factory = DocumentBuilderFactory.newInstance();
+		this.builder = factory.newDocumentBuilder();
+	}
 
-    public XmlConvert(String xmlCode) throws ParserConfigurationException {
-        this.factory = DocumentBuilderFactory.newInstance();
-        this.builder = factory.newDocumentBuilder();
-        this.xmlCode = xmlCode;
-    }
+	public Map<String, Object> toMap(File file) throws IOException, SizeLimitExceededException {
+		RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+		long fileSize = randomAccessFile.length();
+		if (fileSize >= Integer.MAX_VALUE) {
+			throw new SizeLimitExceededException("Files larger than 2 GB cannot be parsed.");
+		}
 
-    public Boolean setSource(String xmlCode) {
-        this.xmlCode = xmlCode;
-        return true;
-    }
+		byte[] xml = new byte[(int)fileSize];
+		randomAccessFile.read(xml);
+		randomAccessFile.close();
 
-    @Override
-    public Map<String, Object> buildToMap() throws IOException {
-        if (this.xmlCode.isEmpty()) {
-            throw new NullPointerException("The value to convert is empty.");
-        }
+		return this.toMap(new String(xml));
+	}
 
-        Map<String, Object> json = new LinkedHashMap<String, Object>();
-        Document document = null;
-        try {
-            StringReader stringReader = new StringReader(this.xmlCode);
-            InputSource inputSource = new InputSource(stringReader);
-            document = this.builder.parse(inputSource);
-        } catch (IOException e) {
-            throw new IOException(e.getMessage());
-        } catch (SAXException e) {
-            throw new IOException(e.getMessage());
-        }
+	@Override
+	public Map<String, Object> toMap(String xml) throws EmptyStackException, IOException {
+		if (xml.isEmpty()) {
+			throw new EmptyStackException();
+		}
 
-        String rootName = document.getFirstChild().getNodeName();
-        Map<String, Object> map = getNodeList(document, rootName);
-        log.debug("[XML to MAP Result]");
-        log.debug(map.toString());
-        return map;
-    }
+		Document document = null;
+		try {
+			StringReader stringReader = new StringReader(xml);
+			InputSource inputSource = new InputSource(stringReader);
+			document = this.builder.parse(inputSource);
+		} catch (IOException e) {
+			throw new IOException(e.getMessage());
+		} catch (SAXException e) {
+			throw new IOException(e.getMessage());
+		}
 
-    private Map<String, Object> getNodeList(Document doc, String rootName) {
-        doc.getDocumentElement().normalize();
-        NodeList nList = doc.getElementsByTagName(rootName);
+		String rootName = document.getFirstChild().getNodeName();
+		return getNodeList(document, rootName);
+	}
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put(rootName, null);
-        log.debug("XML RootName: " + rootName);
+	private Map<String, Object> getNodeList(Document doc, String rootName) {
+		doc.getDocumentElement().normalize();
+		NodeList nList = doc.getElementsByTagName(rootName);
 
-        return travNode(map.get(rootName), nList);
-    }
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put(rootName, null);
+		log.debug("XML RootName: " + rootName);
 
-    private Map travNode(Object map, NodeList nodes) {
+		return travNode(map.get(rootName), nList);
+	}
 
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node n = nodes.item(i);
+	private Map travNode(Object map, NodeList nodes) {
 
-            if (n.getNodeType() == Node.ELEMENT_NODE) {
-                NodeList childNodes = n.getChildNodes();
-                int cnt = childNodes.getLength();
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node n = nodes.item(i);
 
-                if (cnt == 1) {
-                    if (map == null) {
-                        map = new LinkedHashMap<>();
-                        log.debug("XML create linkedHashMap.");
-                    }
-                    ((Map) map).put(n.getNodeName(), n.getTextContent());
-                } else {
-                    if (map == null) {
-                        map = new LinkedHashMap<>();
-                        log.debug("XML create linkedHashMap.");
-                    }
-                    ((Map) map).put(n.getNodeName(), null);
-                }
+			if (n.getNodeType() == Node.ELEMENT_NODE) {
+				NodeList childNodes = n.getChildNodes();
+				int cnt = childNodes.getLength();
 
-                if (cnt > 1) {
-                    ((Map) map).put(n.getNodeName(), travNode(((Map) map).get(n.getNodeName()), childNodes));
-                }
-            }
-        }
-        return (Map) map;
-    }
+				if (cnt == 1) {
+					if (map == null) {
+						map = new LinkedHashMap<>();
+						log.debug("XML create linkedHashMap.");
+					}
+					((Map) map).put(n.getNodeName(), n.getTextContent());
+				} else {
+					if (map == null) {
+						map = new LinkedHashMap<>();
+						log.debug("XML create linkedHashMap.");
+					}
+					((Map) map).put(n.getNodeName(), null);
+				}
+
+				if (cnt > 1) {
+					((Map) map).put(n.getNodeName(), travNode(((Map) map).get(n.getNodeName()), childNodes));
+				}
+			}
+		}
+		return (Map) map;
+	}
 }
