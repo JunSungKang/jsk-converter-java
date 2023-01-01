@@ -17,4 +17,9 @@ public class JsonConvert implements Convert {
 	public Map<String, Object> toMap(String json) {
 		return null;
 	}
+
+	@Override
+	public String toBeautify(String code, String encoding) {
+		return null;
+	}
 }
