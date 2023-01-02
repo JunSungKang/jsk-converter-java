@@ -18,7 +18,9 @@ String xml = "<person><name>js</name></person>";
 XmlConvert xmlConvert = new XmlConvert();
 Map<String, Object> map = xmlConvert.toMap(xml);
 System.out.println(map.toString());
+```
 
+```java
 String xml = "<person><name>js</name></person>";
 XmlConvert xmlConvert = new XmlConvert();
 String beautifyXml = xmlConvert.toBeautify(xml);
