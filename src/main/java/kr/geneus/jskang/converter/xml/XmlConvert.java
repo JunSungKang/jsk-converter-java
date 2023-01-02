@@ -78,6 +78,50 @@ public class XmlConvert implements Convert {
 		return getNodeList(document, rootName);
 	}
 
+	public String toCsv(File file) throws IOException, SizeLimitExceededException {
+		RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+		long fileSize = randomAccessFile.length();
+		if (fileSize >= Integer.MAX_VALUE) {
+			throw new SizeLimitExceededException("Files larger than 2 GB cannot be parsed.");
+		}
+
+		byte[] xml = new byte[(int) fileSize];
+		randomAccessFile.read(xml);
+		randomAccessFile.close();
+
+		return this.toCsv(new String(xml));
+	}
+
+	/**
+	 * Xml code conversion to csv code.
+	 *
+	 * @param xml input XML Code
+	 * @return csv code.
+	 * @throws IOException
+	 */
+	@Override
+	public String toCsv(String xml) throws IOException {
+		if (xml.isEmpty()) {
+			throw new EmptyStackException();
+		}
+
+		Document document = null;
+		try {
+			StringReader stringReader = new StringReader(xml);
+			InputSource inputSource = new InputSource(stringReader);
+			document = this.builder.parse(inputSource);
+		} catch (IOException e) {
+			throw new IOException(e.getMessage());
+		} catch (SAXException e) {
+			throw new IOException(e.getMessage());
+		}
+
+		String rootName = document.getFirstChild().getNodeName();
+		// TODO: How can I process the CSV conversion at once?
+		return null;
+		//return getNodeList(document, rootName);
+	}
+
     /**
      * It helps you to beautifully output single-line XML code.
      * Since no encoding was entered, it defaults to UTF-8.

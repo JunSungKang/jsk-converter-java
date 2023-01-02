@@ -19,6 +19,11 @@ public class JsonConvert implements Convert {
 	}
 
 	@Override
+	public String toCsv(String xml) throws IOException {
+		return null;
+	}
+
+	@Override
 	public String toBeautify(String code, String encoding) {
 		return null;
 	}
