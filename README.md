@@ -16,9 +16,11 @@ Support conversion list.
 ```java
 String xml = "<person><name>js</name></person>";
 XmlConvert xmlConvert = new XmlConvert();
-xmlConvert.toMap(xml);
+Map<String, Object> map = xmlConvert.toMap(xml);
+System.out.println(map.toString());
 
 String xml = "<person><name>js</name></person>";
 XmlConvert xmlConvert = new XmlConvert();
-xmlConvert.toBeautify(xml);
+String beautifyXml = xmlConvert.toBeautify(xml);
+System.out.println(beautifyXml);
 ```
