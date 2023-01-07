@@ -210,9 +210,12 @@ public class XmlConvert implements Convert {
 
 			// Generate attribute start.
 			NamedNodeMap attributeNodes = n.getAttributes();
-			int attributeCnt = attributeNodes.getLength();
-			if (attributes == null) {
-				attributes = new LinkedHashMap<>();
+			int attributeCnt = 0;
+			if (attributeNodes != null) {
+				attributeCnt = attributeNodes.getLength();
+				if (attributes == null) {
+					attributes = new LinkedHashMap<>();
+				}
 			}
 
 			if (attributeCnt >= 1) {
@@ -236,7 +239,7 @@ public class XmlConvert implements Convert {
 						}
 					}
 				}
-			} else {
+			} else if (attributeNodes != null){
 				((Map) attributes).put(n.getNodeName(), new LinkedHashMap<>());
 			}
 			// Generate attribute end.
