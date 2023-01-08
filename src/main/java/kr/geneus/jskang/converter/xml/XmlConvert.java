@@ -23,6 +23,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import kr.geneus.jskang.converter.common.Convert;
+import kr.geneus.jskang.converter.common.ConvertType;
 import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -75,7 +76,7 @@ public class XmlConvert implements Convert {
 		}
 
 		String rootName = document.getFirstChild().getNodeName();
-		return getNodeList(document, rootName);
+		return (Map) getNodeList(ConvertType.MAP, document, rootName);
 	}
 
 	public String toCsv(File file) throws IOException, SizeLimitExceededException {
@@ -186,7 +187,14 @@ public class XmlConvert implements Convert {
 		return xmlOutput.getWriter().toString();
 	}
 
-	private Map<String, Object> getNodeList(Document doc, String rootName) {
+	/**
+	 * Convert XML document to map
+	 *
+	 * @param doc      Parsed XML document.
+	 * @param rootName Xml document parent root name.
+	 * @return
+	 */
+	private Map<String, Object> xmlToMap(Document doc, String rootName) {
 		doc.getDocumentElement().normalize();
 		NodeList nList = doc.getElementsByTagName(rootName);
 
@@ -196,11 +204,22 @@ public class XmlConvert implements Convert {
 
 		map.put(rootName, null);
 		log.debug("XML RootName: " + rootName);
+
 		return travNode(
 			((Map) map.get("attributes")).get(rootName),
 			((Map) map.get("value")).get(rootName),
 			nList
 		);
+	}
+
+	private Object getNodeList(String convertType, Document doc, String rootName) {
+
+		switch (convertType) {
+			case ConvertType.MAP:
+				return xmlToMap(doc, rootName);
+			default:
+				throw new UnsupportedOperationException("This conversion type is not supported.");
+		}
 	}
 
 	private Map travNode(Object attributes, Object value, NodeList nodes) {
@@ -239,7 +258,7 @@ public class XmlConvert implements Convert {
 						}
 					}
 				}
-			} else if (attributeNodes != null){
+			} else if (attributeNodes != null) {
 				((Map) attributes).put(n.getNodeName(), new LinkedHashMap<>());
 			}
 			// Generate attribute end.
