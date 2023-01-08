@@ -123,27 +123,26 @@ public class XmlConvert implements Convert {
 		//return getNodeList(document, rootName);
 	}
 
-    /**
-     * It helps you to beautifully output single-line XML code.
-     * Since no encoding was entered, it defaults to UTF-8.
-     *
-     * @param file input XML Code
-     *
-     * @return beautiful xml code
-     */
-    public String toBeautify(File file) throws IOException, SizeLimitExceededException, TransformerException {
-        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
-        long fileSize = randomAccessFile.length();
-        if (fileSize >= Integer.MAX_VALUE) {
-            throw new SizeLimitExceededException("Files larger than 2 GB cannot be parsed.");
-        }
+	/**
+	 * It helps you to beautifully output single-line XML code.
+	 * Since no encoding was entered, it defaults to UTF-8.
+	 *
+	 * @param file input XML Code
+	 * @return beautiful xml code
+	 */
+	public String toBeautify(File file) throws IOException, SizeLimitExceededException, TransformerException {
+		RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+		long fileSize = randomAccessFile.length();
+		if (fileSize >= Integer.MAX_VALUE) {
+			throw new SizeLimitExceededException("Files larger than 2 GB cannot be parsed.");
+		}
 
-        byte[] xml = new byte[(int) fileSize];
-        randomAccessFile.read(xml);
-        randomAccessFile.close();
+		byte[] xml = new byte[(int) fileSize];
+		randomAccessFile.read(xml);
+		randomAccessFile.close();
 
-        return this.toBeautify(new String(xml));
-    }
+		return this.toBeautify(new String(xml));
+	}
 
 	/**
 	 * It helps you to beautifully output single-line XML code.
