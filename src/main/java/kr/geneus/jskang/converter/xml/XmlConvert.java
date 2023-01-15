@@ -41,6 +41,7 @@ public class XmlConvert implements Convert {
 		RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
 		long fileSize = randomAccessFile.length();
 		if (fileSize >= Integer.MAX_VALUE) {
+			randomAccessFile.close();
 			throw new SizeLimitExceededException("Files larger than 2 GB cannot be parsed.");
 		}
 
@@ -57,15 +58,21 @@ public class XmlConvert implements Convert {
 			throw new EmptyStackException();
 		}
 
+		StringReader stringReader = null;
+		InputSource inputSource = null;
 		Document document = null;
 		try {
-			StringReader stringReader = new StringReader(xml);
-			InputSource inputSource = new InputSource(stringReader);
+			stringReader = new StringReader(xml);
+			inputSource = new InputSource(stringReader);
 			document = this.builder.parse(inputSource);
 		} catch (IOException e) {
+			stringReader.close();
 			throw new IOException(e.getMessage());
 		} catch (SAXException e) {
+			stringReader.close();
 			throw new IOException(e.getMessage());
+		} finally {
+			stringReader.close();
 		}
 
 		String rootName = document.getFirstChild().getNodeName();
@@ -76,6 +83,7 @@ public class XmlConvert implements Convert {
 		RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
 		long fileSize = randomAccessFile.length();
 		if (fileSize >= Integer.MAX_VALUE) {
+			randomAccessFile.close();
 			throw new SizeLimitExceededException("Files larger than 2 GB cannot be parsed.");
 		}
 
@@ -99,15 +107,21 @@ public class XmlConvert implements Convert {
 			throw new EmptyStackException();
 		}
 
+		StringReader stringReader = null;
+		InputSource inputSource = null;
 		Document document = null;
 		try {
-			StringReader stringReader = new StringReader(xml);
-			InputSource inputSource = new InputSource(stringReader);
+			stringReader = new StringReader(xml);
+			inputSource = new InputSource(stringReader);
 			document = this.builder.parse(inputSource);
 		} catch (IOException e) {
+			stringReader.close();
 			throw new IOException(e.getMessage());
 		} catch (SAXException e) {
+			stringReader.close();
 			throw new IOException(e.getMessage());
+		} finally {
+			stringReader.close();
 		}
 
 		String rootName = document.getFirstChild().getNodeName();
@@ -127,6 +141,7 @@ public class XmlConvert implements Convert {
 		RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
 		long fileSize = randomAccessFile.length();
 		if (fileSize >= Integer.MAX_VALUE) {
+			randomAccessFile.close();
 			throw new SizeLimitExceededException("Files larger than 2 GB cannot be parsed.");
 		}
 
