@@ -125,9 +125,7 @@ public class XmlConvert implements Convert {
 		}
 
 		String rootName = document.getFirstChild().getNodeName();
-		// TODO: How can I process the CSV conversion at once?
-		return null;
-		//return getNodeList(document, rootName);
+		return new TranslateToCsv().getNodeList(document, rootName);
 	}
 
 	/**

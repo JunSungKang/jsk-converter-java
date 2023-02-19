@@ -69,6 +69,69 @@ class XmlConvertTest {
 	}
 
 	@Test
+	void toCsvTest() throws ParserConfigurationException, IOException, TransformerException {
+		XmlConvert xmlConvert = new XmlConvert();
+
+		assertThat(xmlConvert.toCsv(this.xml1).toString())
+			.isEqualTo(
+				"note>to,note>from,note>heading,note>body\n"
+					+ "Tove,Jani,Reminder,Don't forget me this weekend!\n"
+			);
+
+		assertThat(xmlConvert.toCsv(this.xml2).toString())
+			.isEqualTo(
+				"breakfast_menu>name,breakfast_menu>price,breakfast_menu>description,breakfast_menu>calories\n"
+					+ "Belgian Waffles,$5.95,Two of our famous Belgian Waffles with plenty of real maple syrup,650\n"
+					+ "Strawberry Belgian Waffles,$7.95,Light Belgian waffles covered with strawberries and whipped cream,900\n"
+					+ "Berry-Berry Belgian Waffles,$8.95,Light Belgian waffles covered with an assortment of fresh berries and whipped cream,900\n"
+					+ "French Toast,$4.50,Thick slices made from our homemade sourdough bread,600\n"
+					+ "Homestyle Breakfast,$6.95,Two eggs, bacon or sausage, toast, and our ever-popular hash browns,950\n"
+			);
+
+		assertThat(xmlConvert.toCsv(this.xml3).toString())
+			.isEqualTo(
+				"project>modelVersion,project>groupId,project>artifactId,project>version\n"
+					+ "4.0.0,com.mycompany.app,my-app,1\n"
+					+ "com.mycompany.app11,my-module11,11\n"
+			);
+
+		assertThat(xmlConvert.toCsv(this.xml4).toString())
+			.isEqualTo(
+				"bookstore>book_category,bookstore>title_lang,bookstore>title,bookstore>author,bookstore>year,bookstore>price\n"
+					+ "COOKING,en,Everyday Italian,Giada De Laurentiis,2005,30.00\n"
+					+ "CHILDREN,en,Harry Potter,J K. Rowling,2005,29.99\n"
+					+ "WEB,en,Learning XML,Erik T. Ray,2003,39.95\n"
+			);
+
+		// TODO: error! solution check !!
+		assertThat(xmlConvert.toCsv(this.xml5).toString())
+			.isEqualTo(
+				""
+			);
+	}
+
+	@Test
+	void toCsvExceptionTest() throws ParserConfigurationException {
+		XmlConvert xmlConvert = new XmlConvert();
+
+		String xmlError1 = "<test><code>M</code>";
+		assertThatThrownBy(() -> xmlConvert.toCsv(xmlError1))
+			.isInstanceOf(IOException.class);
+
+		String xmlError2 = "testcodeM";
+		assertThatThrownBy(() -> xmlConvert.toCsv(xmlError2))
+			.isInstanceOf(IOException.class);
+
+		String xmlError3 = "<test><code><1>6>9</code></test>";
+		assertThatThrownBy(() -> xmlConvert.toCsv(xmlError3))
+			.isInstanceOf(IOException.class);
+
+		String xmlError4 = "";
+		assertThatThrownBy(() -> xmlConvert.toCsv(xmlError4))
+			.isInstanceOf(EmptyStackException.class);
+	}
+
+	@Test
 	void toBeautifyTest() throws ParserConfigurationException, TransformerException {
 		XmlConvert xmlConvert = new XmlConvert();
 
